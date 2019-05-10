@@ -14,7 +14,7 @@ use lispa\amos\core\user\AmosUser;
 use lispa\amos\core\user\User;
 use lispa\amos\privileges\AmosPrivileges;
 use lispa\amos\privileges\models\Privilege;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -25,7 +25,7 @@ use yii\rbac\Item;
  * Class PrivilegesUtility
  * @package lispa\amos\privileges\utility
  */
-class PrivilegesUtility extends Object
+class PrivilegesUtility extends BaseObject
 {
     const CWH_PERMISSION_PREFIX = 'CWH_PERMISSION';
 
@@ -131,6 +131,7 @@ class PrivilegesUtility extends Object
             if (!empty($privileges)) {
                 $arrayModule['allModels'] = $privileges;
                 if (!empty($arrayModule['allModels'])) {
+                    $arrayModule['pagination'] = false;
                     $dataProviderModule = new ArrayDataProvider($arrayModule);
                     $array[$moduleName] = $dataProviderModule;
                 }
@@ -144,6 +145,7 @@ class PrivilegesUtility extends Object
                 array_push($arrayPlatform['allModels'], $privilege->toArray());
             }
         }
+        $arrayPlatform['pagination'] = false;
         $dataProviderPlatform = new ArrayDataProvider($arrayPlatform);
         $array['platform']    = $dataProviderPlatform;
 

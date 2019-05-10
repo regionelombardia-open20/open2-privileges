@@ -53,6 +53,7 @@ class UserPrivilegesWidget extends \yii\base\Widget
             ['class' => 'btn btn-navigation-primary pull-right'] ),
             ['class' => 'col-xs-12']
         );
+        
         $count = 0;
         foreach ($array as $label => $data) {
             $data->pagination = false;
@@ -111,6 +112,7 @@ class UserPrivilegesWidget extends \yii\base\Widget
 
             $count++;
         }
+        
         return $html;
     }
 

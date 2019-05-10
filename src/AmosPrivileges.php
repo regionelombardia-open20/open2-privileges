@@ -31,7 +31,7 @@ class AmosPrivileges extends AmosModule implements ModuleInterface
     /**
      * @var array array of modules for which privileges are not considered
      */
-    public $blackListModules = ['inforeq', 'organizzazioni', 'proposte_collaborazione', 'proposte_collaborazione_een'];
+    public $blackListModules = ['inforeq', 'proposte_collaborazione', 'proposte_collaborazione_een'];
     /**
      * @var array list of platform roles (not from a single plugin) - override this if necessary
      */
