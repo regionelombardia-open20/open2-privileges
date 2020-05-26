@@ -1,14 +1,14 @@
 {
-    "name": "lispa/amos-privileges",
+    "name": "open20/amos-privileges",
     "description": "AMOS plugin for privileges management (role, permission, domains.. )",
     "keywords": ["amos", "yii2", "privileges"],
-    "homepage": "http://www.lispa.it/",
+    "homepage": "http://www.open20.it/",
     "type": "component",
-    "proscription": "BSD-3-Clause",
+    "license": "BSD-3-Clause",
     "require": {
         "php": ">=5.4.0",
-        "lispa/amos-admin" : "*",
-        "lispa/amos-core" : "*"
+        "open20/amos-admin": "~2.0",
+        "open20/amos-core": "~1.9"
     },
     "config": {
         "process-timeout": 1800,
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "lispa\\amos\\privileges\\": "src"
+            "open20\\amos\\privileges\\": "src"
         }
     },
     "require-dev": {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Lombardia Informatica S.p.A.
+ * Aria S.p.A.
  * OPEN 2.0
  *
  *
@@ -8,15 +8,15 @@
  * @category   CategoryName
  */
 
-namespace lispa\amos\privileges;
+namespace open20\amos\privileges;
 
-use lispa\amos\core\module\AmosModule;
-use lispa\amos\core\module\ModuleInterface;
+use open20\amos\core\module\AmosModule;
+use open20\amos\core\module\ModuleInterface;
 use Yii;
 
 /**
  * Class AmosReport
- * @package lispa\amos\privileges
+ * @package open20\amos\privileges
  */
 class AmosPrivileges extends AmosModule implements ModuleInterface
 {
@@ -57,7 +57,7 @@ class AmosPrivileges extends AmosModule implements ModuleInterface
     {
         parent::init();
 
-        \Yii::setAlias('@lispa/amos/' . static::getModuleName() . '/controllers', __DIR__ . '/controllers');
+        \Yii::setAlias('@open20/amos/' . static::getModuleName() . '/controllers', __DIR__ . '/controllers');
         // initialize the module with the configuration loaded from config.php
         Yii::configure($this, require(__DIR__ . DIRECTORY_SEPARATOR . self::$CONFIG_FOLDER . DIRECTORY_SEPARATOR . 'config.php'));
     }

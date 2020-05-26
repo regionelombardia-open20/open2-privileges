@@ -1,10 +1,10 @@
 <?php
 /**
- * Lombardia Informatica S.p.A.
+ * Aria S.p.A.
  * OPEN 2.0
  *
  *
- * @package    lispa\amos\privileges
+ * @package    open20\amos\privileges
  * @category   CategoryName
  *
  *
@@ -14,11 +14,11 @@
  * @var integer $userId
  */
 
-use lispa\amos\core\helpers\Html;
-use lispa\amos\core\icons\AmosIcons;
-use lispa\amos\core\user\User;
-use lispa\amos\core\views\AmosGridView;
-use lispa\amos\privileges\AmosPrivileges;
+use open20\amos\core\helpers\Html;
+use open20\amos\core\icons\AmosIcons;
+use open20\amos\core\user\User;
+use open20\amos\core\views\AmosGridView;
+use open20\amos\privileges\AmosPrivileges;
 use yii\bootstrap\Modal;
 use yii\web\JsExpression;
 
@@ -114,7 +114,7 @@ $this->registerJs($js);
                         'layout' => '{items}',
                         'columns' => [
                             [
-                                'class' => \lispa\amos\core\views\grid\ActionColumn::className(),
+                                'class' => \open20\amos\core\views\grid\ActionColumn::className(),
                                 'template' => '{enableDisable}',
                                 'buttons' => [
                                     'enableDisable' => function ($url, $model) use ($label) {
@@ -174,7 +174,7 @@ $this->registerJs($js);
                                 ]
                             ],
                             [
-                                'class' => \lispa\amos\core\views\grid\ActionColumn::className(),
+                                'class' => \open20\amos\core\views\grid\ActionColumn::className(),
                                 'template' => '{statusIcon}',
                                 'buttons' => [
                                     'statusIcon' => function ($url, $model) {

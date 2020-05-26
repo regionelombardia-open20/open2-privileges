@@ -1,19 +1,19 @@
 <?php
 /**
- * Lombardia Informatica S.p.A.
+ * Aria S.p.A.
  * OPEN 2.0
  *
  *
- * @package    lispa\amos\privileges\utility
+ * @package    open20\amos\privileges\utility
  * @category   CategoryName
  */
 
-namespace lispa\amos\privileges\utility;
+namespace open20\amos\privileges\utility;
 
-use lispa\amos\core\user\AmosUser;
-use lispa\amos\core\user\User;
-use lispa\amos\privileges\AmosPrivileges;
-use lispa\amos\privileges\models\Privilege;
+use open20\amos\core\user\AmosUser;
+use open20\amos\core\user\User;
+use open20\amos\privileges\AmosPrivileges;
+use open20\amos\privileges\models\Privilege;
 use yii\base\BaseObject;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -23,7 +23,7 @@ use yii\rbac\Item;
 
 /**
  * Class PrivilegesUtility
- * @package lispa\amos\privileges\utility
+ * @package open20\amos\privileges\utility
  */
 class PrivilegesUtility extends BaseObject
 {
@@ -203,10 +203,10 @@ class PrivilegesUtility extends BaseObject
         }
         foreach ($this->privileges as $name => $privilege) {
             if (!empty($moduleName) && $moduleName != 'cwh' && strstr($name, $moduleName) && strstr($name, self::CWH_PERMISSION_PREFIX)) {
-                $privilege->name        = str_replace(substr($privilege->name, strpos($privilege->name, 'lispa')),
+                $privilege->name        = str_replace(substr($privilege->name, strpos($privilege->name, 'open20')),
                     $moduleName, $privilege->name);
                 $privilege->description = str_replace(substr($privilege->description,
-                        strpos($privilege->description, 'lispa')), $moduleName, $privilege->description);
+                        strpos($privilege->description, 'open20')), $moduleName, $privilege->description);
                 $privilege->text        = $privilege->name.'<br/>'.$privilege->description;
                 if (!in_array($moduleName, $this->privilegesModule->blackListModules) && (!$isView || $privilege->can)) {
                     $privileges[$privilege->name]               = $privilege->toArray();
@@ -255,7 +255,7 @@ class PrivilegesUtility extends BaseObject
         if ($privilege->type == Item::TYPE_PERMISSION) {
             if (strstr($privilege->name, self::CWH_PERMISSION_PREFIX) !== false) {
                 $privilege->isCwh = true;
-                $domainsArray     = \lispa\amos\cwh\models\CwhAuthAssignment::find()->select('cwh_nodi_id')
+                $domainsArray     = \open20\amos\cwh\models\CwhAuthAssignment::find()->select('cwh_nodi_id')
                         ->andWhere(['item_name' => $privilege->name])
                         ->andWhere(['not like', 'cwh_nodi_id', 'user'])
                         ->andWhere(['user_id' => $this->userId])->asArray()->all();

@@ -1,21 +1,21 @@
 <?php
 
 /**
- * Lombardia Informatica S.p.A.
+ * Aria S.p.A.
  * OPEN 2.0
  *
  *
- * @package    lispa\amos\privileges
+ * @package    open20\amos\privileges
  * @category   CategoryName
  */
 
-namespace lispa\amos\privileges\models;
+namespace open20\amos\privileges\models;
 
 use yii\base\Model;
 
 /**
  * Class Privilege
- * @package lispa\amos\privileges\models
+ * @package open20\amos\privileges\models
  */
 class Privilege extends Model
 {

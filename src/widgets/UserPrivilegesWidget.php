@@ -1,21 +1,21 @@
 <?php
 
 /**
- * Lombardia Informatica S.p.A.
+ * Aria S.p.A.
  * OPEN 2.0
  *
  *
- * @package    lispa\amos\privileges
+ * @package    open20\amos\privileges
  * @category   CategoryName
  */
 
-namespace lispa\amos\privileges\widgets;
+namespace open20\amos\privileges\widgets;
 
-use lispa\amos\core\helpers\Html;
-use lispa\amos\core\views\ListView;
-use lispa\amos\privileges\AmosPrivileges;
-use lispa\amos\privileges\assets\AmosPrivilegesAsset;
-use lispa\amos\privileges\utility\PrivilegesUtility;
+use open20\amos\core\helpers\Html;
+use open20\amos\core\views\ListView;
+use open20\amos\privileges\AmosPrivileges;
+use open20\amos\privileges\assets\AmosPrivilegesAsset;
+use open20\amos\privileges\utility\PrivilegesUtility;
 use yii\helpers\ArrayHelper;
 
 
@@ -31,7 +31,7 @@ class UserPrivilegesWidget extends \yii\base\Widget
         parent::init();
 
         if (is_null($this->userId)) {
-            throw new \Exception(\lispa\amos\core\module\BaseAmosModule::t('amosreport', 'Missing userId'));
+            throw new \Exception(\open20\amos\core\module\BaseAmosModule::t('amosreport', 'Missing userId'));
         }
     }
 
@@ -50,7 +50,7 @@ class UserPrivilegesWidget extends \yii\base\Widget
         $html = Html::tag('div',
             Html::a(AmosPrivileges::t('amosprivileges', 'manage'),
             ['/privileges/privileges/manage-privileges', 'id' => $id],
-            ['class' => 'btn btn-navigation-primary pull-right'] ),
+            ['class' => 'btn btn-navigation-primary pull-right manage-privileges-widget-btn'] ),
             ['class' => 'col-xs-12']
         );
         
@@ -79,7 +79,7 @@ class UserPrivilegesWidget extends \yii\base\Widget
                     if($model['can']) {
                         $item = $model['description'];
                         if ($model['isCwh']) {
-                            $domains = ArrayHelper::map(\lispa\amos\cwh\models\CwhNodi::find()->andWhere([
+                            $domains = ArrayHelper::map(\open20\amos\cwh\models\CwhNodi::find()->andWhere([
                                 'in',
                                 'id',
                                 explode(',', $model['domains'])
