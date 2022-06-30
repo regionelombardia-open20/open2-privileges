@@ -23,9 +23,24 @@ use yii\web\JsExpression;
  * @var \yii\web\View $this
  * @var integer $userId
  */
+ 
+ 
+$user = User::findOne($userId);
+$userProfileId = 0;
+if (!is_null($user)) {
+	$userProfileId = $user->userProfile->id;
+}
 
 $this->title = AmosPrivileges::t('amosprivileges', 'Manage privileges');
 $this->params['breadcrumbs'][] = $this->title;
+$this->params['forceBreadcrumbs'][] = [
+    'label' => \amos\podcast\Module::t('amosprivileges', "Utente"),
+    'url' => '/' .AmosAdmin::getModuleName() . '/user-profile/update?id='.$userProfileId,
+    'route' => '/' .AmosAdmin::getModuleName() . '/user-profile/update?id='.$userProfileId,
+];
+$this->params['forceBreadcrumbs'][] = [
+    'label' => $this->title,
+];
 $url = \Yii::$app->urlManager->baseUrl . '/attachments/file/download/';
 // AGID FIELDS ENABLE
 $enableAgid = AmosPrivileges::instance()->enableAgid;
@@ -251,13 +266,6 @@ $this->registerJs($js);
         <?php $numSlide++; ?>
     <?php endforeach; ?>
     
-    <?php
-    $user = User::findOne($userId);
-    $userProfileId = 0;
-    if (!is_null($user)) {
-        $userProfileId = $user->userProfile->id;
-    }
-    ?>
     <?php if ($enableAgid) : ?>
         <?php
         $cmd = Yii::$app->db->createCommand("SELECT name FROM auth_item WHERE name LIKE '%REDACTOR_%' and type = 1");
