@@ -39,6 +39,7 @@ class AmosPrivileges extends AmosModule implements ModuleInterface
 
     public static $CONFIG_FOLDER = 'config';
 
+    public $enableAgid = false;
     /**
      * @var string|boolean the layout that should be applied for views within this module. This refers to a view name
      * relative to [[layoutPath]]. If this is not set, it means the layout value of the [[module|parent module]]

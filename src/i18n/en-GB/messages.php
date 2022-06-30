@@ -23,6 +23,7 @@ return [
     'Disable' => 'Disable',
     'discussioni' => 'Discussions',
     'documenti' => 'Documents',
+    '#editorial_board' => 'Editorial board',
     'email' => 'Emails',
     'Enable' => 'Enable',
     'Enabled because contained in roles:' => 'Enabled because contained in roles:',

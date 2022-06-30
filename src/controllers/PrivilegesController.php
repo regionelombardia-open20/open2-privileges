@@ -11,6 +11,7 @@
 namespace open20\amos\privileges\controllers;
 
 
+use open20\amos\dashboard\utility\DashboardUtility;
 use open20\amos\privileges\AmosPrivileges;
 use open20\amos\privileges\events\PrivilegesEvent;
 use open20\amos\privileges\utility\PrivilegesUtility;
@@ -66,7 +67,8 @@ class PrivilegesController extends Controller
                             'manage-privileges',
                             'enable',
                             'disable',
-                            'save-domains'
+                            'save-domains',
+                            'save-categorie-roles'
                         ],
                         'roles' => $rolesEnabled,
                     ],
@@ -152,6 +154,8 @@ class PrivilegesController extends Controller
             }
             try {
                 $authManager->assign($privilege, $userId);
+                DashboardUtility::resetDashboardsByUser($userId);
+                \Yii::$app->authManager->deleteAllCache();
             } catch (\Exception $exception) {
                 Yii::$app->getSession()->addFlash('danger', AmosPrivileges::t('amosprivileges', $flashError, ['authItemName' => $priv]));
             }
@@ -195,6 +199,9 @@ class PrivilegesController extends Controller
                 $revokeSuccessfull = $authManager->revoke($privilege, $userId);
                 if (!$revokeSuccessfull) {
                     Yii::$app->getSession()->addFlash('danger', AmosPrivileges::t('amosprivileges', $flashError, ['authItemName' => $priv]));
+                } else {
+                    DashboardUtility::resetDashboardsByUser($userId);
+                    \Yii::$app->authManager->deleteAllCache();
                 }
             } catch (\Exception $exception) {
                 Yii::$app->getSession()->addFlash('danger', AmosPrivileges::t('amosprivileges', $flashError, ['authItemName' => $priv]));
@@ -278,5 +285,32 @@ class PrivilegesController extends Controller
             return true;
         }
         return true;
+    }
+
+    /**
+     * @param $userId
+     * @param string $anchor
+     * @return \yii\web\Response
+     */
+    public function actionSaveCategorieRoles($userId, $anchor = '')
+    {
+        $post = \Yii::$app->request->post();
+        if(!empty($post['auth-assign-roles'])){
+            $authAssign = $post['auth-assign-roles'];
+            $newDomains = !empty($authAssign['newDomains'])? $authAssign['newDomains'] : [] ;
+            $modulo=\Yii::$app->getModule($authAssign['name']);
+            $class=$modulo::getModelCategoryRole();
+            $class::deleteAll('user_id = '.$userId);
+            $attributeCategory=array_keys((new $class)->getAttributes())[1];
+          foreach ($newDomains as $nd){
+              $model=(new $class);
+              $model->$attributeCategory=(int)$nd;
+              $model->user_id=$userId;
+              $model->role=$authAssign['rolename'];
+              $model->save();
+         
+          }
+        }
+        return $this->redirect(['manage-privileges', 'id' => $userId, '#' => $anchor]);
     }
 }

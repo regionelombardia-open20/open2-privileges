@@ -23,6 +23,7 @@ return [
     'Disable' => 'Disattiva',
     'discussioni' => 'Discussioni',
     'documenti' => 'Documenti',
+    '#editorial_board' => 'Redazione',
     'email' => 'Email',
     'Enable' => 'Attiva',
     'Enabled because contained in roles:' => 'Attivo perchè contenuto nei ruoli:',

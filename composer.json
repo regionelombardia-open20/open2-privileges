@@ -7,8 +7,9 @@
     "proscription": "BSD-3-Clause",
     "require": {
         "php": ">=5.4.0",
-        "open20/amos-admin": "~2.0",
-        "open20/amos-core": "~1.9"
+        "open20/amos-admin": "^2.0",
+        "open20/amos-core": "^1.9",
+        "open20/amos-dashboard": "^1.8.4"
     },
     "config": {
         "process-timeout": 1800,

@@ -6,14 +6,9 @@
  *
  * @package    open20\amos\privileges
  * @category   CategoryName
- *
- *
- * @var array $array
- * @var array $cwhNodes
- * @var \yii\web\View $this
- * @var integer $userId
  */
 
+use open20\amos\admin\AmosAdmin;
 use open20\amos\core\helpers\Html;
 use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\user\User;
@@ -21,11 +16,19 @@ use open20\amos\core\views\AmosGridView;
 use open20\amos\privileges\AmosPrivileges;
 use yii\bootstrap\Modal;
 use yii\web\JsExpression;
-use open20\amos\admin\AmosAdmin;
+
+/**
+ * @var array $array
+ * @var array $cwhNodes
+ * @var \yii\web\View $this
+ * @var integer $userId
+ */
 
 $this->title = AmosPrivileges::t('amosprivileges', 'Manage privileges');
 $this->params['breadcrumbs'][] = $this->title;
 $url = \Yii::$app->urlManager->baseUrl . '/attachments/file/download/';
+// AGID FIELDS ENABLE
+$enableAgid = AmosPrivileges::instance()->enableAgid;
 ///attachments/file/download?id=37&hash=b22a4e0ac092f76630a23330598b5ddd&size=original
 
 $format = <<< SCRIPT
@@ -78,13 +81,13 @@ $this->registerJs($js);
 
 ?>
 <div id="AmosGridViewAccordion" role="tablist">
-
+    
     <?php
     $numSlide = 1;
     ?>
-
+    
     <?php foreach ($array as $label => $data): ?>
-
+        
         <?php
         $headSlide = "heading" . $numSlide;
         $collSlide = "collapse" . $numSlide;
@@ -95,19 +98,19 @@ $this->registerJs($js);
             <div class="card-header" role="tab" id="<?= $headSlide ?>">
                 <a class="collapseLink col-xs-12 nop" data-toggle="collapse" aria-expanded="<?= ($numSlide == 1) ? 'true' : 'false' ?>" href="<?= $acollSlide ?>"
                    aria-controls="<?= $collSlide ?>">
-                <h2 class="mb-0 pull-left">
-
-
+                    <h2 class="mb-0 pull-left">
+                        
+                        
                         <?= $label ?>
 
 
-                </h2>
-                    <div class="p-t-20"><?= AmosIcons::show('caret-'.(($numSlide != 1) ? 'down' : 'up'),['class'=>'am-2 m-l-15'])?></div>
+                    </h2>
+                    <div class="p-t-20"><?= AmosIcons::show('caret-' . (($numSlide != 1) ? 'down' : 'up'), ['class' => 'am-2 m-l-15']) ?></div>
                 </a>
             </div>
 
             <div id="<?= $collSlide ?>" class="collapse <?= ($numSlide == 1) ? 'in' : '' ?>"
-            role="tabpanel" aria-labelledby="<?= $headSlide ?>" data-parent="#accordion">
+                 role="tabpanel" aria-labelledby="<?= $headSlide ?>" data-parent="#accordion">
                 <div class="card-body">
                     <?= AmosGridView::widget([
                         'dataProvider' => $data,
@@ -118,10 +121,9 @@ $this->registerJs($js);
                                 'class' => \open20\amos\core\views\grid\ActionColumn::className(),
                                 'template' => '{enableDisable}',
                                 'buttons' => [
-                                    'enableDisable' => function ($url, $model) use ($label) {
+                                    'enableDisable' => function ($url, $model) use ($label, $userId) {
                                         $btn = '';
                                         if ($model['active']) {
-                                            $userId = Yii::$app->request->get('id');
                                             $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Disable'),
                                                 [
                                                     '/privileges/privileges/disable',
@@ -138,7 +140,6 @@ $this->registerJs($js);
                                         } else {
                                             if (!$model['can']) {
                                                 if (!$model['isCwh']) {
-                                                    $userId = Yii::$app->request->get('id');
                                                     $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Enable'),
                                                         [
                                                             '/privileges/privileges/enable',
@@ -187,7 +188,6 @@ $this->registerJs($js);
                                     }
                                 ]
                             ],
-//            'text:raw',
                             'text' => [
                                 'format' => 'html',
                                 'attribute' => 'text',
@@ -205,10 +205,9 @@ $this->registerJs($js);
                             'domains' => [
                                 'label' => AmosPrivileges::t('amosprivileges', 'Active for domains'),
                                 'format' => 'raw',
-                                'value' => function ($model) use ($cwhNodes, $escape, $label) {
+                                'value' => function ($model) use ($cwhNodes, $escape, $label, $userId) {
                                     $domains = '';
                                     if ($model['isCwh']) {
-                                        $userId = Yii::$app->request->get('id');
                                         $domains = Html::beginForm('/privileges/privileges/save-domains?userId=' . $userId . '&anchor=' . $label,
                                             'post',
                                             [
@@ -251,19 +250,157 @@ $this->registerJs($js);
         </div> <!-- card -->
         <?php $numSlide++; ?>
     <?php endforeach; ?>
-
-</div>
-
-<?php
-$user = User::findOne($userId);
-$userProfileId = 0;
-if (!is_null($user)) {
-    $userProfileId = $user->userProfile->id;
-}
-?>
-<?php if ($userProfileId != 0): ?>
-    <?= Html::a(AmosPrivileges::t('amosprivileges', 'Close'),
-        ['/' . AmosAdmin::getModuleName() . '/user-profile/update', 'id' => $userProfileId, '#' => 'tab-administration'],
-        ['class' => 'btn btn-navigation-primary pull-right'])
+    
+    <?php
+    $user = User::findOne($userId);
+    $userProfileId = 0;
+    if (!is_null($user)) {
+        $userProfileId = $user->userProfile->id;
+    }
     ?>
-<?php endif; ?>
+    <?php if ($enableAgid) : ?>
+        <?php
+        $cmd = Yii::$app->db->createCommand("SELECT name FROM auth_item WHERE name LIKE '%REDACTOR_%' and type = 1");
+        $query = $cmd->queryAll();
+        $dataProvider = new \yii\data\ArrayDataProvider([
+            'allModels' => $query,
+            'pagination' => FALSE
+        ]);
+        $label = 'redaction';
+        ?>
+        <div class="card">
+            <div class="card-header" role="tab" id="redazione">
+                <h2 class="mb-0 pull-left text-primary"><?= AmosPrivileges::t('amosprivileges', '#editorial_board'); ?></h2>
+            </div>
+            <div class="card-body">
+                <?= AmosGridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'id' => $label,
+                    'layout' => '{items}',
+                    'columns' => [
+                        [
+                            'class' => \open20\amos\core\views\grid\ActionColumn::className(),
+                            'template' => '{enableDisable}',
+                            'buttons' => [
+                                'enableDisable' => function ($url, $model) use ($label) {
+                                    $btn = '';
+                                    $userId = Yii::$app->request->get('id');
+                                    
+                                    if (in_array($model['name'], array_keys(\Yii::$app->authManager->getRolesByUser($userId)))) {
+                                        
+                                        $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Disable'),
+                                            [
+                                                '/privileges/privileges/disable',
+                                                'userId' => $userId,
+                                                'priv' => $model['name'],
+                                                'type' => 1,
+                                                'isCwh' => $model['isCwh'],
+                                                'anchor' => $label
+                                            ],
+                                            [
+                                                'class' => 'btn btn-navigation-primary',
+                                                'style' => 'font-size:0.8em;'
+                                            ]);
+                                    } else {
+                                        
+                                        $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Enable'),
+                                            [
+                                                '/privileges/privileges/enable',
+                                                'userId' => $userId,
+                                                'priv' => $model['name'],
+                                                'type' => 1,
+                                                'isCwh' => $model['isCwh'],
+                                                'anchor' => $label
+                                            ],
+                                            [
+                                                'class' => 'btn btn-navigation-primary',
+                                                'style' => 'font-size:0.8em;'
+                                            ]);
+                                        
+                                    }
+                                    return $btn;
+                                },
+                            ]
+                        ],
+                        [
+                            'class' => \open20\amos\core\views\grid\ActionColumn::className(),
+                            'template' => '{statusIcon}',
+                            'buttons' => [
+                                'statusIcon' => function ($url, $model) {
+                                    $btn = '';
+                                    if ($model['can']) {
+                                        $btn = AmosIcons::show('check-circle', ['style' => 'color:green;']);
+                                    }
+                                    return $btn;
+                                }
+                            ]
+                        ],
+                        'name' => [
+                            'format' => 'html',
+                            'attribute' => 'name',
+                            'label' => AmosPrivileges::t('amosprivileges', 'Privilege')
+                        ],
+                        'tooltip' => [
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a(AmosIcons::show('info',
+                                    ['style' => 'color:green; font-size:1.5em;']), null,
+                                    ['data-toggle' => 'tooltip', 'title' => $model['tooltip']]);
+                            }
+                        ],
+                        'domains' => [
+                            'label' => AmosPrivileges::t('amosprivileges', 'Active for domains'),
+                            'format' => 'raw',
+                            'value' => function ($model) use ($userId, $escape, $label) {
+                                $model['name'] = strtolower(str_replace('REDACTOR_', '', $model['name']));
+                                $modulo = \Yii::$app->getModule($model['name']);
+                                if (($modulo instanceof open20\amos\privileges\interfaces\CategoriesRolesInterface)) {
+                                    $model['domains'] = array_keys($modulo::getCategoryArrayRoleAssignedToUser($userId));
+                                    $domains = '';
+                                    
+                                    $userId = Yii::$app->request->get('id');
+                                    $domains = Html::beginForm('/privileges/privileges/save-categorie-roles?userId=' . $userId . '&anchor=' . $label,
+                                        'post',
+                                        [
+                                            'id' => 'auth-assign-roles'
+                                        ]);
+                                    $domains .= \kartik\select2\Select2::widget([
+                                        'name' => 'auth-assign-roles[newDomains]',
+                                        'data' => $modulo::getCategoryArrayRole(),
+                                        'value' => $model['domains'],
+                                        'options' => [
+                                            'multiple' => true,
+                                            'placeholder' => AmosPrivileges::t('amosprivileges',
+                                                'Select domains ...'),
+                                        ],
+                                        'pluginOptions' => [
+                                            'escapeMarkup' => $escape,
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    $domains .= Html::hiddenInput('auth-assign-roles[name]', $model['name']);
+                                    $domains .= Html::hiddenInput('auth-assign-roles[rolename]', 'REDACTOR');
+                                    $btnSave = Html::submitButton(AmosPrivileges::t('amosprivileges',
+                                        'Save changes'),
+                                        [
+                                            'class' => 'btn btn-navigation-primary pull-right',
+                                            'style' => 'margin-top: 5px;'
+                                        ]);
+                                    $domains .= $btnSave . Html::endForm();
+                                    return $domains;
+                                }
+                                return null;
+                            }
+                        ]
+                    ]
+                ]) ?>
+            </div> <!-- card-body -->
+        </div>
+    <?php endif; ?>
+    <?php if ($userProfileId != 0): ?>
+        <?= Html::a(AmosPrivileges::t('amosprivileges', 'Close'),
+            ['/' . AmosAdmin::getModuleName() . '/user-profile/update', 'id' => $userProfileId, '#' => 'tab-administration'],
+            ['class' => 'btn btn-navigation-primary pull-right'])
+        ?>
+    <?php endif; ?>
+</div>
