@@ -10,10 +10,13 @@
 
 namespace open20\amos\privileges\utility;
 
+use open20\amos\admin\AmosAdmin;
 use open20\amos\core\user\AmosUser;
 use open20\amos\core\user\User;
+use open20\amos\cwh\models\CwhAuthAssignment;
 use open20\amos\privileges\AmosPrivileges;
 use open20\amos\privileges\models\Privilege;
+use Yii;
 use yii\base\BaseObject;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -96,7 +99,7 @@ class PrivilegesUtility extends BaseObject
         $this->items = $rows->all();
 
         /** @var DbManager $authManager */
-        $authManager             = \Yii::$app->authManager;
+        $authManager             = Yii::$app->authManager;
         $assignments             = $authManager->getAssignments($this->userId);
         $this->directAssignments = ArrayHelper::map($assignments, 'roleName', 'roleName');
 
@@ -118,7 +121,7 @@ class PrivilegesUtility extends BaseObject
     public function getPrivilegesArray($isView = false)
     {
 
-        $modules         = \Yii::$app->getModules();
+        $modules         = Yii::$app->getModules();
         $moduleNameArray = array_keys($modules);
 
         sort($moduleNameArray, SORT_ASC);
@@ -160,7 +163,7 @@ class PrivilegesUtility extends BaseObject
 
         if (!is_null($moduleName)) {
             /** @var string $moduleName */
-            if ($moduleName != 'cwh' && $moduleName != 'admin') {
+            if ($moduleName != 'cwh' && $moduleName != AmosAdmin::getModuleName()) {
                 $keys[] = strtoupper($moduleName);
             }
             if (strstr($moduleName, 'project')) {
@@ -193,7 +196,7 @@ class PrivilegesUtility extends BaseObject
             if ($moduleName == 'sondaggi') {
                 $keys[] = 'RISULTATI';
             }
-            if ($moduleName == 'admin') {
+            if ($moduleName == AmosAdmin::getModuleName()) {
                 $keys[] = 'USER_';
                 $keys[] = 'USERPROFILE';
             }
@@ -255,7 +258,7 @@ class PrivilegesUtility extends BaseObject
         if ($privilege->type == Item::TYPE_PERMISSION) {
             if (strstr($privilege->name, self::CWH_PERMISSION_PREFIX) !== false) {
                 $privilege->isCwh = true;
-                $domainsArray     = \open20\amos\cwh\models\CwhAuthAssignment::find()->select('cwh_nodi_id')
+                $domainsArray     = CwhAuthAssignment::find()->select('cwh_nodi_id')
                         ->andWhere(['item_name' => $privilege->name])
                         ->andWhere(['not like', 'cwh_nodi_id', 'user'])
                         ->andWhere(['user_id' => $this->userId])->asArray()->all();

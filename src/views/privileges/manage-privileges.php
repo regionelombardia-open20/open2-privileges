@@ -21,6 +21,7 @@ use open20\amos\core\views\AmosGridView;
 use open20\amos\privileges\AmosPrivileges;
 use yii\bootstrap\Modal;
 use yii\web\JsExpression;
+use open20\amos\admin\AmosAdmin;
 
 $this->title = AmosPrivileges::t('amosprivileges', 'Manage privileges');
 $this->params['breadcrumbs'][] = $this->title;
@@ -262,7 +263,7 @@ if (!is_null($user)) {
 ?>
 <?php if ($userProfileId != 0): ?>
     <?= Html::a(AmosPrivileges::t('amosprivileges', 'Close'),
-        ['/admin/user-profile/update', 'id' => $userProfileId, '#' => 'tab-administration'],
+        ['/' . AmosAdmin::getModuleName() . '/user-profile/update', 'id' => $userProfileId, '#' => 'tab-administration'],
         ['class' => 'btn btn-navigation-primary pull-right'])
     ?>
 <?php endif; ?>
