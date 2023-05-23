@@ -404,6 +404,146 @@ $this->registerJs($js);
                 ]) ?>
             </div> <!-- card-body -->
         </div>
+    <?php if ($enableAgid) : ?>
+        <?php
+        $cmd = Yii::$app->db->createCommand("SELECT name FROM auth_item WHERE name LIKE '%AGID_SERVICE_ADMIN%' and type = 1");
+        $query = $cmd->queryAll();
+        $dataProvider = new \yii\data\ArrayDataProvider([
+            'allModels' => $query,
+            'pagination' => FALSE
+        ]);
+        $label = 'service';
+        ?>
+        <div class="card">
+            <div class="card-header" role="tab" id="redazione">
+                <h2 class="mb-0 pull-left text-primary"><?= AmosPrivileges::t('amosprivileges', 'Servizi'); ?></h2>
+            </div>
+            <div class="card-body">
+                <?= AmosGridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'id' => $label,
+                    'layout' => '{items}',
+                    'columns' => [
+                        [
+                            'class' => \open20\amos\core\views\grid\ActionColumn::className(),
+                            'template' => '{enableDisable}',
+                            'buttons' => [
+                                'enableDisable' => function ($url, $model) use ($label) {
+                                    $btn = '';
+                                    $userId = Yii::$app->request->get('id');
+
+                                    if (in_array($model['name'], array_keys(\Yii::$app->authManager->getRolesByUser($userId)))) {
+
+                                        $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Disable'),
+                                            [
+                                                '/privileges/privileges/disable',
+                                                'userId' => $userId,
+                                                'priv' => $model['name'],
+                                                'type' => 1,
+                                                'isCwh' => $model['isCwh'],
+                                                'anchor' => $label
+                                            ],
+                                            [
+                                                'class' => 'btn btn-navigation-primary',
+                                                'style' => 'font-size:0.8em;'
+                                            ]);
+                                    } else {
+
+                                        $btn = Html::a(AmosPrivileges::t('amosprivileges', 'Enable'),
+                                            [
+                                                '/privileges/privileges/enable',
+                                                'userId' => $userId,
+                                                'priv' => $model['name'],
+                                                'type' => 1,
+                                                'isCwh' => $model['isCwh'],
+                                                'anchor' => $label
+                                            ],
+                                            [
+                                                'class' => 'btn btn-navigation-primary',
+                                                'style' => 'font-size:0.8em;'
+                                            ]);
+
+                                    }
+                                    return $btn;
+                                },
+                            ]
+                        ],
+                        [
+                            'class' => \open20\amos\core\views\grid\ActionColumn::className(),
+                            'template' => '{statusIcon}',
+                            'buttons' => [
+                                'statusIcon' => function ($url, $model) {
+                                    $btn = '';
+                                    if ($model['can']) {
+                                        $btn = AmosIcons::show('check-circle', ['style' => 'color:green;']);
+                                    }
+                                    return $btn;
+                                }
+                            ]
+                        ],
+                        'name' => [
+                            'format' => 'html',
+                            'attribute' => 'name',
+                            'label' => AmosPrivileges::t('amosprivileges', 'Privilege')
+                        ],
+                        'tooltip' => [
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a(AmosIcons::show('info',
+                                    ['style' => 'color:green; font-size:1.5em;']), null,
+                                    ['data-toggle' => 'tooltip', 'title' => $model['tooltip']]);
+                            }
+                        ],
+                        'domains' => [
+                            'label' => AmosPrivileges::t('amosprivileges', 'Active for domains'),
+                            'format' => 'raw',
+                            'value' => function ($model) use ($userId, $escape, $label) {
+                                $model['name'] = 'service';
+                                //$model['name'] = strtolower(str_replace('REDACTOR_', '', $model['name']));
+                                $modulo = \Yii::$app->getModule($model['name']);
+                                if (($modulo instanceof \open20\amos\privileges\interfaces\ServiceCategoriesRolesInterface)) {
+                                    $model['domains'] = array_keys($modulo::getServiceCategoryArrayRoleAssignedToUser($userId));
+                                    $domains = '';
+
+                                    $userId = Yii::$app->request->get('id');
+                                    $domains = Html::beginForm('/privileges/privileges/save-service-categorie-roles?userId=' . $userId . '&anchor=' . $label,
+                                        'post',
+                                        [
+                                            'id' => 'auth-assign-roles'
+                                        ]);
+                                    $domains .= \kartik\select2\Select2::widget([
+                                        'name' => 'auth-assign-roles[newDomains]',
+                                        'data' => $modulo::getServiceCategoryArrayRole(),
+                                        'value' => $model['domains'],
+                                        'options' => [
+                                            'multiple' => true,
+                                            'placeholder' => AmosPrivileges::t('amosprivileges',
+                                                'Select domains ...'),
+                                        ],
+                                        'pluginOptions' => [
+                                            'escapeMarkup' => $escape,
+                                            'allowClear' => true
+                                        ],
+                                    ]);
+                                    $domains .= Html::hiddenInput('auth-assign-roles[name]', $model['name']);
+                                    $domains .= Html::hiddenInput('auth-assign-roles[rolename]', 'AGID_SERVICE_ADMIN');
+                                    $btnSave = Html::submitButton(AmosPrivileges::t('amosprivileges',
+                                        'Save changes'),
+                                        [
+                                            'class' => 'btn btn-navigation-primary pull-right',
+                                            'style' => 'margin-top: 5px;'
+                                        ]);
+                                    $domains .= $btnSave . Html::endForm();
+                                    return $domains;
+                                }
+                                return null;
+                            }
+                        ]
+                    ]
+                ]) ?>
+            </div> <!-- card-body -->
+        <?php endif; ?>
+    </div>
     <?php endif; ?>
     <?php if ($userProfileId != 0): ?>
         <?= Html::a(AmosPrivileges::t('amosprivileges', 'Close'),

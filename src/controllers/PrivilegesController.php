@@ -68,7 +68,8 @@ class PrivilegesController extends Controller
                             'enable',
                             'disable',
                             'save-domains',
-                            'save-categorie-roles'
+                            'save-categorie-roles',
+                            'save-service-categorie-roles'
                         ],
                         'roles' => $rolesEnabled,
                     ],
@@ -310,6 +311,34 @@ class PrivilegesController extends Controller
               $model->save();
          
           }
+        }
+        return $this->redirect(['manage-privileges', 'id' => $userId, '#' => $anchor]);
+    }
+
+    /**
+     * @param $userId
+     * @param string $anchor
+     * @return \yii\web\Response
+     */
+    public function actionSaveServiceCategorieRoles($userId, $anchor = '')
+    {
+        $post = \Yii::$app->request->post();
+        if(!empty($post['auth-assign-roles'])){
+            $authAssign = $post['auth-assign-roles'];
+            $newDomains = !empty($authAssign['newDomains'])? $authAssign['newDomains'] : [] ;
+            $modulo=\Yii::$app->getModule($authAssign['name']);
+            $class=$modulo::getServiceModelCategoryRole();
+            $class::deleteAll('user_id = '.$userId);
+            $attributeCategory=array_keys((new $class)->getAttributes())[1];
+            foreach ($newDomains as $nd){
+                $model=(new $class);
+                $model->$attributeCategory=(int)$nd;
+                $model->user_id=$userId;
+                //$model->role=$authAssign['rolename'];
+                $model->role='AGID_SERVICE_ADMIN';
+                $model->save();
+
+            }
         }
         return $this->redirect(['manage-privileges', 'id' => $userId, '#' => $anchor]);
     }
