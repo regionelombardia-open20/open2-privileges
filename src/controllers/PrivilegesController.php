@@ -111,13 +111,13 @@ class PrivilegesController extends Controller
         $utility = new PrivilegesUtility(['userId' => $id]);
         $array = $utility->getPrivilegesArray( false);
 
-        $cwhModule = \Yii::$app->getModule('cwh');
-        if($cwhModule) {
-            $listNetworks = $cwhModule->getUserNetworks($id);
-            if(!empty($listNetworks)) {
-                $cwhNodes = ArrayHelper::map($listNetworks, 'id', 'text');
-            }
-        }
+//        $cwhModule = \Yii::$app->getModule('cwh');
+//        if($cwhModule) {
+//            $listNetworks = $cwhModule->getUserNetworks($id);
+//            if(!empty($listNetworks)) {
+//                $cwhNodes = ArrayHelper::map($listNetworks, 'id', 'text');
+//            }
+//        }
         return $this->render('manage-privileges', [
             'userId' => $id,
             'array' => $array,
