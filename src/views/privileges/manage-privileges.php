@@ -34,7 +34,7 @@ if (!is_null($user)) {
 $this->title = AmosPrivileges::t('amosprivileges', 'Manage privileges');
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['forceBreadcrumbs'][] = [
-    'label' => \amos\podcast\Module::t('amosprivileges', "Utente"),
+    'label' => AmosPrivileges::t('amosprivileges', "Utente"),
     'url' => '/' .AmosAdmin::getModuleName() . '/user-profile/update?id='.$userProfileId,
     'route' => '/' .AmosAdmin::getModuleName() . '/user-profile/update?id='.$userProfileId,
 ];
